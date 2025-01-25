@@ -27,9 +27,16 @@ class Customer
     #[ORM\OneToMany(targetEntity: CustomerUser::class, mappedBy: 'customer', orphanRemoval: true)]
     private Collection $users;
 
+    /**
+     * @var Collection<int, CustomerUser>
+     */
+    #[ORM\OneToMany(targetEntity: CustomerUser::class, mappedBy: 'customer', orphanRemoval: true)]
+    private Collection $customerUsers;
+
     public function __construct()
     {
         $this->users = new ArrayCollection();
+        $this->customerUsers = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -85,6 +92,36 @@ class Customer
             // set the owning side to null (unless already changed)
             if ($user->getCustomer() === $this) {
                 $user->setCustomer(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, CustomerUser>
+     */
+    public function getCustomerUsers(): Collection
+    {
+        return $this->customerUsers;
+    }
+
+    public function addCustomerUser(CustomerUser $customerUser): static
+    {
+        if (!$this->customerUsers->contains($customerUser)) {
+            $this->customerUsers->add($customerUser);
+            $customerUser->setCustomer($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCustomerUser(CustomerUser $customerUser): static
+    {
+        if ($this->customerUsers->removeElement($customerUser)) {
+            // set the owning side to null (unless already changed)
+            if ($customerUser->getCustomer() === $this) {
+                $customerUser->setCustomer(null);
             }
         }
 
