@@ -34,19 +34,21 @@ final class ProductController extends AbstractController
         return new JsonResponse(null, Response::HTTP_NOT_FOUND);
     }
 
-    #[Route('/api/products/{id}', name: 'delete_product', methods: ['DELETE'])]
-    public function deleteProduct(int $id, ProductRepository $productRepository, EntityManagerInterface $em): JsonResponse
-    {
-        $product = $productRepository->find($id);
-        if ($product) {
-            $em->remove($product);
-            $em->flush();
-            return new JsonResponse(null, Response::HTTP_NO_CONTENT);
-        }
-        return new JsonResponse(null, Response::HTTP_NOT_FOUND);
-    }
+    /* This is commented because customers don't need a DELETE endpoint.
+     * #[Route('/api/products/{id}', name: 'delete_product', methods: ['DELETE'])]
+     public function deleteProduct(int $id, ProductRepository $productRepository, EntityManagerInterface $em): JsonResponse
+     {
+         $product = $productRepository->find($id);
+         if ($product) {
+             $em->remove($product);
+             $em->flush();
+             return new JsonResponse(null, Response::HTTP_NO_CONTENT);
+         }
+         return new JsonResponse(null, Response::HTTP_NOT_FOUND);
+     }*/
 
-    #[Route('/api/products', name: 'create_product', methods: ['POST'])]
+   /* This is commented because customers don't need a POST endpoint.
+    * #[Route('/api/products', name: 'create_product', methods: ['POST'])]
     public function createProduct(SerializerInterface $serializer, Request $request, EntityManagerInterface $manager):JsonResponse
     {
         $product = $serializer->deserialize($request->getContent(),Product::class,'json');
@@ -55,9 +57,10 @@ final class ProductController extends AbstractController
         $newProductJson = $serializer->serialize($product,'json');
         $returnLocation = $this->generateUrl('product',['id'=>$product->getId()]);
         return new JsonResponse($newProductJson,Response::HTTP_CREATED,['Location'=>$returnLocation],true);
-    }
+    }*/
 
-    #[Route('/api/products/{id}', name: 'update_product', methods: ['PUT'])]
+    /* This is commented because customers don't need a PUT endpoint.
+     * #[Route('/api/products/{id}', name: 'update_product', methods: ['PUT'])]
     public function updateProduct(int $id, SerializerInterface $serializer, Request $request, EntityManagerInterface $manager):JsonResponse
     {
         $foundProduct = $manager->getRepository(Product::class)->findOneBy(['id'=>$id]);
@@ -70,7 +73,6 @@ final class ProductController extends AbstractController
         $manager->flush();
 
         return new JsonResponse(null, Response::HTTP_NO_CONTENT);
-    }
-
+    }*/
 
 }
