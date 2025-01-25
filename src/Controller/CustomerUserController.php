@@ -14,16 +14,17 @@ use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 #[Route('/api/users')]
-final class UserController extends AbstractController
+final class CustomerUserController extends AbstractController
 {
     #[Route('', name: 'users', methods: ['GET'])]
     public function getUsersList(CustomerUserRepository $userRepository, SerializerInterface $serializer): JsonResponse
     {
-        $currentUser = $this->getUser();
-        if (!$currentUser) {
-            return new JsonResponse(null, Response::HTTP_UNAUTHORIZED);
-        }
-        $users = $userRepository->findBy(['customer' => $currentUser->getCustomer()]);
+        // TODO : add proper security and authentication to use this
+//        $currentUser = $this->getUser();
+//        if (!$currentUser) {
+//            return new JsonResponse(null, Response::HTTP_UNAUTHORIZED);
+//        }
+        $users = $userRepository->findBy(['customer'=>1]);
         $jsonUsers = $serializer->serialize($users, 'json', ['groups' => 'user:read']);
         return new JsonResponse($jsonUsers, Response::HTTP_OK, [], true);
     }
