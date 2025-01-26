@@ -14,20 +14,14 @@ use Symfony\Component\Serializer\SerializerInterface;
 final class ProductController extends AbstractController
 {
     #[Route('', name: 'products', methods: ['GET'])]
-    public function getProductsList(
-        ProductRepository $productRepository,
-        SerializerInterface $serializer
-    ): JsonResponse {
+    public function getProductsList(ProductRepository $productRepository,SerializerInterface $serializer): JsonResponse {
         $products = $productRepository->findAll();
         $jsonProductsList = $serializer->serialize($products, 'json');
         return new JsonResponse($jsonProductsList, Response::HTTP_OK, [], true);
     }
 
     #[Route('/{id}', name: 'product', methods: ['GET'])]
-    public function getProduct(
-        Product $product, // ParamConverter automatically resolves the Product entity
-        SerializerInterface $serializer
-    ): JsonResponse {
+    public function getProduct(Product $product,SerializerInterface $serializer): JsonResponse {
         $jsonProduct = $serializer->serialize($product, 'json');
         return new JsonResponse($jsonProduct, Response::HTTP_OK, [], true);
     }
