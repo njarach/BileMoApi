@@ -2,6 +2,7 @@
 
 namespace App\Repository;
 
+use App\Entity\Customer;
 use App\Entity\CustomerUser;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -33,28 +34,12 @@ class CustomerUserRepository extends ServiceEntityRepository implements Password
         $this->getEntityManager()->flush();
     }
 
-    //    /**
-    //     * @return CustomerUser[] Returns an array of CustomerUser objects
-    //     */
-    //    public function findByExampleField($value): array
-    //    {
-    //        return $this->createQueryBuilder('c')
-    //            ->andWhere('c.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->orderBy('c.id', 'ASC')
-    //            ->setMaxResults(10)
-    //            ->getQuery()
-    //            ->getResult()
-    //        ;
-    //    }
-
-    //    public function findOneBySomeField($value): ?CustomerUser
-    //    {
-    //        return $this->createQueryBuilder('c')
-    //            ->andWhere('c.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
-    //        ;
-    //    }
+    public function findPaginatedCustomerUsers(Customer $customer, int $page = 1, int $limit = 5): array
+    {
+        $qb = $this->createQueryBuilder('cu')
+            ->where('cu.customer = :customer')
+            ->setFirstResult(($page -1) * $limit)
+            ->setMaxResults($limit);
+        return $qb->getQuery()->setParameter('customer',$customer)->getResult();
+    }
 }
