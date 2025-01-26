@@ -22,14 +22,17 @@ final class CustomerUserController extends AbstractController
      * @throws HttpException
      */
     #[Route('', name: 'users', methods: ['GET'])]
-    public function getUsersList(CustomerUserRepository $userRepository, SerializerInterface $serializer): JsonResponse
+    public function getUsersList(CustomerUserRepository $userRepository, SerializerInterface $serializer, Request $request): JsonResponse
     {
         $currentUser = $this->getUser();
         if (!$currentUser) {
             throw new HttpException(Response::HTTP_UNAUTHORIZED, 'Authentication is required.');
         }
 
-        $users = $userRepository->findBy(['customer' => $currentUser->getCustomer()]);
+        $page = $request->query->get('page',1);
+        $limit = $request->query->get('limit',5);
+
+        $users = $userRepository->findPaginatedCustomerUsers($currentUser->getCustomer(), $page, $limit);
         $jsonUsers = $serializer->serialize($users, 'json', ['groups' => 'user:read']);
 
         return new JsonResponse($jsonUsers, Response::HTTP_OK, [], true);
