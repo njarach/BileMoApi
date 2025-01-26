@@ -6,6 +6,7 @@ use App\Entity\Product;
 use App\Repository\ProductRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\Routing\Attribute\Route;
@@ -15,14 +16,17 @@ use Symfony\Component\Serializer\SerializerInterface;
 final class ProductController extends AbstractController
 {
     #[Route('', name: 'products', methods: ['GET'])]
-    public function getProductsList(ProductRepository $productRepository, SerializerInterface $serializer): JsonResponse
+    public function getProductsList(ProductRepository $productRepository, SerializerInterface $serializer, Request $request): JsonResponse
     {
         $currentUser = $this->getUser();
         if (!$currentUser) {
             throw new HttpException(Response::HTTP_UNAUTHORIZED, 'Authentication is required.');
         }
 
-        $products = $productRepository->findAll();
+        $page = $request->query->get('page',1);
+        $limit = $request->query->get('limit',5);
+
+        $products = $productRepository->findPaginatedProducts($page,$limit);
         $jsonProductsList = $serializer->serialize($products, 'json');
 
         return new JsonResponse($jsonProductsList, Response::HTTP_OK, [], true);
