@@ -23,7 +23,7 @@ final class CustomerUserController extends AbstractController
         if (!$currentUser) {
             return new JsonResponse(null, Response::HTTP_UNAUTHORIZED);
         }
-        $users = $userRepository->findBy(['customer'=>1]);
+        $users = $userRepository->findBy(['customer'=>$currentUser->getCustomer()]);
         $jsonUsers = $serializer->serialize($users, 'json', ['groups' => 'user:read']);
         return new JsonResponse($jsonUsers, Response::HTTP_OK, [], true);
     }
@@ -32,8 +32,6 @@ final class CustomerUserController extends AbstractController
     public function getUserDetail(CustomerUser $user, SerializerInterface $serializer): JsonResponse
     {
         $currentUser = $this->getUser();
-//        $serializedCurrentUser =$serializer->serialize($currentUser,'json',['groups' => 'user:read']);
-//        return new JsonResponse($serializedCurrentUser,Response::HTTP_OK,[],true);
 
         if (!$currentUser || $user->getCustomer() !== $currentUser->getCustomer()) {
             return new JsonResponse(null, Response::HTTP_FORBIDDEN);
@@ -54,10 +52,12 @@ final class CustomerUserController extends AbstractController
         $user->setFirstname($data['firstname'] ?? null);
         $user->setLastname($data['lastname'] ?? null);
         $user->setCustomer($currentUser->getCustomer());
+
         $errors = $validator->validate($user);
         if (count($errors) > 0) {
             return new JsonResponse(null, Response::HTTP_BAD_REQUEST);
         }
+
         $em->persist($user);
         $em->flush();
 
