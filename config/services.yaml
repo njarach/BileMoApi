@@ -21,7 +21,10 @@ services:
             - '../src/Kernel.php'
     App\Serializer\ProductNormalizer:
         tags:
-            - { name: 'serializer.normalizer', priority : 500 }
+            - { name: 'serializer.normalizer' }
+    App\Serializer\CustomerUserNormalizer:
+        tags:
+            - { name: 'serializer.normalizer' }
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
