@@ -10,6 +10,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpException;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
@@ -17,6 +18,9 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 #[Route('/api/users')]
 final class CustomerUserController extends AbstractController
 {
+    /**
+     * @throws HttpException
+     */
     #[Route('', name: 'users', methods: ['GET'])]
     public function getUsersList(CustomerUserRepository $userRepository, SerializerInterface $serializer): JsonResponse
     {
@@ -49,7 +53,7 @@ final class CustomerUserController extends AbstractController
      * @throws HttpException
      */
     #[Route('', name: 'create_user', methods: ['POST'])]
-    public function createUser(Request $request, EntityManagerInterface $em, SerializerInterface $serializer, ValidatorInterface $validator): JsonResponse
+    public function createUser(Request $request, EntityManagerInterface $em, SerializerInterface $serializer, ValidatorInterface $validator, UserPasswordHasherInterface $passwordHasher): JsonResponse
     {
         $currentUser = $this->getUser();
         if (!$currentUser) {
@@ -57,13 +61,17 @@ final class CustomerUserController extends AbstractController
         }
 
         $customerUser = $serializer->deserialize($request->getContent(), CustomerUser::class, 'json');
+        $customerUser->setCustomer($currentUser->getCustomer());
+        $plaintextPassword = $customerUser->getPassword();
+        $hashedPassword = $passwordHasher->hashPassword($customerUser, $plaintextPassword);
+        $customerUser->setPassword($hashedPassword);
+        $customerUser->setRoles(['ROLE_USER']);
 
         $errors = $validator->validate($customerUser);
         if (count($errors) > 0) {
             throw new HttpException(Response::HTTP_BAD_REQUEST, 'Invalid request payload.');
         }
 
-        $customerUser->setCustomer($currentUser->getCustomer());
         $em->persist($customerUser);
         $em->flush();
 
