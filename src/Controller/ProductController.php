@@ -40,7 +40,8 @@ final class ProductController extends AbstractController
             $item->tag('productsCache');
             $item->expiresAfter(3600);
             $products = $productRepository->findPaginatedProducts($page, $limit);
-            return $serializer->serialize($products, 'json');
+
+            return $serializer->serialize($products, 'json', ['groups'=>'product:read']);
         });
 
         return new JsonResponse($jsonProductsList, Response::HTTP_OK, [], true);
