@@ -16,7 +16,7 @@ class ExceptionSubscriber implements EventSubscriberInterface
 
         if ($exception instanceof HttpException) {
             $data = [
-                'status'=> $exception->getCode(),
+                'status'=> $exception->getStatusCode(),
                 'message' => $exception->getMessage()
             ];
         } else {
