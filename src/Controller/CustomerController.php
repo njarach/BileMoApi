@@ -37,7 +37,6 @@ final class CustomerController extends AbstractController
         }
 
         $idCache = "getCustomers-" . $page . "-" . $limit;
-        $cache->delete('getCustomers-' . $page . '-' . $limit); // Supprime le cache temporairement
 
         $jsonUsers = $cache->get($idCache, function (ItemInterface $item) use ($customerRepository, $page, $limit, $serializer, $currentUser) {
             $item->tag('customersCache');
