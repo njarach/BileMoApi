@@ -6,7 +6,7 @@ security:
     providers:
         customer_user_provider:
             entity:
-                class: App\Entity\CustomerUser
+                class: App\Entity\User
                 property: email
     firewalls:
         dev:

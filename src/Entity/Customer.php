@@ -3,9 +3,9 @@
 namespace App\Entity;
 
 use App\Repository\CustomerRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
+use Symfony\Component\Validator\Constraints as Assert;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ORM\Entity(repositoryClass: CustomerRepository::class)]
 class Customer
@@ -13,118 +13,92 @@ class Customer
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['customer:read'])]
     private ?int $id = null;
 
-    #[ORM\Column(length: 255)]
-    private ?string $name = null;
+    #[ORM\Column(length: 180)]
+    #[Assert\NotBlank(message: 'Email is required.')]
+    #[Assert\Email(message: 'Please provide a valid email address.')]
+    #[Groups(['customer:read'])]
+    private ?string $email = null;
 
-    #[ORM\Column(length: 255)]
-    private ?string $company_name = null;
+    #[ORM\ManyToOne(inversedBy: 'userUsers')]
+    #[ORM\JoinColumn(nullable: false)]
+    #[Assert\NotNull(message: "An error occurred when trying to update this Customer data. Please contact an administrator.")]
+    private ?User $user = null;
 
-    /**
-     * @var Collection<int, CustomerUser>
-     */
-    #[ORM\OneToMany(targetEntity: CustomerUser::class, mappedBy: 'customer', orphanRemoval: true)]
-    private Collection $users;
+    #[ORM\Column(length: 100)]
+    #[Assert\NotBlank(message: 'Firstname is required.')]
+    #[Assert\Length(
+        max: 100,
+        maxMessage: 'Firstname cannot exceed {{ limit }} characters.'
+    )]
+    #[Groups(['customer:read'])]
+    private ?string $firstname = null;
 
-    /**
-     * @var Collection<int, CustomerUser>
-     */
-    #[ORM\OneToMany(targetEntity: CustomerUser::class, mappedBy: 'customer', orphanRemoval: true)]
-    private Collection $customerUsers;
-
-    public function __construct()
-    {
-        $this->users = new ArrayCollection();
-        $this->customerUsers = new ArrayCollection();
-    }
+    #[ORM\Column(length: 100)]
+    #[Assert\NotBlank(message: 'Lastname is required.')]
+    #[Assert\Length(
+        max: 100,
+        maxMessage: 'Lastname cannot exceed {{ limit }} characters.'
+    )]
+    #[Groups(['customer:read'])]
+    private ?string $lastname = null;
 
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getName(): ?string
+    public function getUser(): ?User
     {
-        return $this->name;
+        return $this->user;
     }
 
-    public function setName(string $name): static
+    public function setUser(?User $user): static
     {
-        $this->name = $name;
+        $this->user = $user;
 
         return $this;
     }
 
-    public function getCompanyName(): ?string
+    public function getFirstname(): ?string
     {
-        return $this->company_name;
+        return $this->firstname;
     }
 
-    public function setCompanyName(string $company_name): static
+    public function setFirstname(string $firstname): static
     {
-        $this->company_name = $company_name;
+        $this->firstname = $firstname;
 
         return $this;
     }
 
-    /**
-     * @return Collection<int, CustomerUser>
-     */
-    public function getUsers(): Collection
+    public function getLastname(): ?string
     {
-        return $this->users;
+        return $this->lastname;
     }
 
-    public function addUser(CustomerUser $user): static
+    public function setLastname(string $lastname): static
     {
-        if (!$this->users->contains($user)) {
-            $this->users->add($user);
-            $user->setCustomer($this);
-        }
-
-        return $this;
-    }
-
-    public function removeUser(CustomerUser $user): static
-    {
-        if ($this->users->removeElement($user)) {
-            // set the owning side to null (unless already changed)
-            if ($user->getCustomer() === $this) {
-                $user->setCustomer(null);
-            }
-        }
+        $this->lastname = $lastname;
 
         return $this;
     }
 
     /**
-     * @return Collection<int, CustomerUser>
+     * @return string|null
      */
-    public function getCustomerUsers(): Collection
+    public function getEmail(): ?string
     {
-        return $this->customerUsers;
+        return $this->email;
     }
 
-    public function addCustomerUser(CustomerUser $customerUser): static
+    /**
+     * @param string|null $email
+     */
+    public function setEmail(?string $email): void
     {
-        if (!$this->customerUsers->contains($customerUser)) {
-            $this->customerUsers->add($customerUser);
-            $customerUser->setCustomer($this);
-        }
-
-        return $this;
-    }
-
-    public function removeCustomerUser(CustomerUser $customerUser): static
-    {
-        if ($this->customerUsers->removeElement($customerUser)) {
-            // set the owning side to null (unless already changed)
-            if ($customerUser->getCustomer() === $this) {
-                $customerUser->setCustomer(null);
-            }
-        }
-
-        return $this;
+        $this->email = $email;
     }
 }
