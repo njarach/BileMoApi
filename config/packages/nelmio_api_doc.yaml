@@ -5,6 +5,59 @@ nelmio_api_doc:
             description: BileMo est une entreprise offrant toute une sélection de téléphones mobiles haut de gamme.
             version: 1.0.0
         paths:
+            /api/customers:
+                get:
+                    summary: Permet d'obtenir la liste de vos utilisateurs.
+                    description: Retourne la liste de vos utilisateurs.
+                    parameters:
+                        - in: query
+                          name: page
+                          schema:
+                              type: integer
+                              default: 1
+                          description: Le numéro de la page à récupérer.
+                        - in: query
+                          name: limit
+                          schema:
+                              type: integer
+                              default: 10
+                          description: Le nombre d'utilisateurs à retourner par page.
+
+            /api/customer/{id}:
+                get:
+                    summary: Permet d'obtenir les détails d'un de vos utilisateurs.
+                    description: Retourne les détails de l'un de vos utilisateurs.
+                    parameters:
+                        - in: path
+                          name: id
+                          required: true
+                          schema:
+                              type: integer
+                          description: L'identifiant unique de l'utilisateur à récupérer.
+
+                post:
+                    summary: Crée un nouvel utilisateur.
+                    description: Crée un nouvel utilisateur pour l'utilisateur authentifié.
+                    requestBody:
+                        required: true
+                        content:
+                            application/json:
+                                schema:
+                                    type: object
+                                    properties:
+                                        name:
+                                            type: string
+                                            description: Le nom du client.
+                                        email:
+                                            type: string
+                                            format: email
+                                            description: L'adresse e-mail du client.
+                                        phone:
+                                            type: string
+                                            description: Le numéro de téléphone du client.
+                                    required:
+                                        - name
+                                        - email
             /api/login_check:
                   post:
                       operationId: postCredentialsItem
