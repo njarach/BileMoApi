@@ -35,7 +35,7 @@ final class CustomerController extends AbstractController
 
         $currentUser = $this->getUser();
         if (!$currentUser) {
-            throw new HttpException(Response::HTTP_UNAUTHORIZED, 'Authentication is required.');
+            throw new HttpException(Response::HTTP_UNAUTHORIZED, 'Authentification requise.');
         }
 
         $idCache = "getCustomers-" . $page . "-" . $limit;
@@ -54,11 +54,15 @@ final class CustomerController extends AbstractController
      * @throws InvalidArgumentException
      */
     #[Route('/{id}', name: 'customer', methods: ['GET'])]
-    public function getCustomerDetail(Customer $customer, SerializerInterface $serializer, TagAwareCacheInterface $cache): JsonResponse
+    public function getCustomerDetail(?Customer $customer, SerializerInterface $serializer, TagAwareCacheInterface $cache, int $id): JsonResponse
     {
+        if (!$customer) {
+            throw new HttpException(Response::HTTP_NOT_FOUND, "Client introuvable pour l'id : $id");
+        }
+
         $currentUser = $this->getUser();
         if (!$currentUser || $customer->getUser() !== $currentUser) {
-            throw new HttpException(Response::HTTP_FORBIDDEN, 'Access denied for this resource.');
+            throw new HttpException(Response::HTTP_FORBIDDEN, 'Accès refusé. Vous ne disposez pas des droits requis pour effectuer cette action.');
         }
 
         $idCache = "getCustomer-" . $customer->getId();
@@ -72,45 +76,61 @@ final class CustomerController extends AbstractController
         return new JsonResponse($jsonUser, Response::HTTP_OK, [], true);
     }
 
+
     #[Route('', name: 'create_customer', methods: ['POST'])]
     public function createCustomer(Request $request, EntityManagerInterface $em, SerializerInterface $serializer, ValidatorInterface $validator): JsonResponse
     {
         $currentUser = $this->getUser();
         if (!$currentUser) {
-            throw new HttpException(Response::HTTP_UNAUTHORIZED, 'Authentication is required.');
+            throw new HttpException(Response::HTTP_UNAUTHORIZED, 'Authentification requise.');
         }
 
-        $customer = $serializer->deserialize($request->getContent(), Customer::class, 'json');
+        try {
+            $customer = $serializer->deserialize($request->getContent(), Customer::class, 'json', ['groups' => 'customer:write']);
+        } catch (\Exception $e) {
+            throw new HttpException(Response::HTTP_BAD_REQUEST, 'Format ou structure JSON invalide');
+        }
+
         $customer->setUser($currentUser);
 
         $errors = $validator->validate($customer);
         if (count($errors) > 0) {
-            throw new HttpException(Response::HTTP_BAD_REQUEST, 'Invalid request payload.');
+            $errorMessages = [];
+            foreach ($errors as $error) {
+                $errorMessages[$error->getPropertyPath()] = $error->getMessage();
+            }
+            throw new HttpException(Response::HTTP_BAD_REQUEST,'Les données fournies ne sont pas valides : ' . json_encode($errorMessages)
+            );
         }
 
         $em->persist($customer);
         $em->flush();
 
+        $jsonCustomer = $serializer->serialize($customer, 'json', ['groups' => 'customer:read']);
         $returnLocation = $this->generateUrl('customer', ['id' => $customer->getId()]);
 
-        return new JsonResponse(null, Response::HTTP_CREATED, ['Location' => $returnLocation], true);
+        return new JsonResponse($jsonCustomer, Response::HTTP_CREATED, ['Location' => $returnLocation], true);
     }
 
     /**
      * @throws InvalidArgumentException
      */
     #[Route('/{id}', name: 'delete_customer', methods: ['DELETE'])]
-    public function deleteCustomer(Customer $customer, EntityManagerInterface $em, TagAwareCacheInterface $cache): JsonResponse
+    public function deleteCustomer(?Customer $customer, EntityManagerInterface $em, TagAwareCacheInterface $cache, int $id): JsonResponse
     {
+        if (!$customer) {
+            throw new HttpException(Response::HTTP_NOT_FOUND, "Client introuvable pour l'id : $id");
+        }
+
         $currentUser = $this->getUser();
         if (!$currentUser || $customer->getUser() !== $currentUser) {
-            throw new HttpException(Response::HTTP_FORBIDDEN, 'Access denied for this resource.');
+            throw new HttpException(Response::HTTP_FORBIDDEN, 'Accès refusé. Vous ne disposez pas des droits requis pour effectuer cette action.');
         }
 
         $cache->invalidateTags(['customersCache']);
         $em->remove($customer);
         $em->flush();
 
-        return new JsonResponse(null, Response::HTTP_NO_CONTENT);
+        return new JsonResponse('Client supprimé avec succès.', 200);
     }
 }

@@ -24,9 +24,10 @@ class CustomerNormalizer implements NormalizerInterface
         if (is_iterable($customer)) {
             return array_map(fn($customer) => $this->normalize($customer, $format, $context), $customer);
         }
+
         $data = $this->normalizer->normalize($customer, $format, array_merge($context, ['groups' => 'customer:read']));
 
-        $data['details']['self'] = $this->urlGenerator->generate(
+        $data['details']['get'] = $this->urlGenerator->generate(
             'customer',
             ['id' => $customer->getId()],
             UrlGeneratorInterface::ABSOLUTE_URL

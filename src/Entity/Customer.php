@@ -3,11 +3,17 @@
 namespace App\Entity;
 
 use App\Repository\CustomerRepository;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ORM\Entity(repositoryClass: CustomerRepository::class)]
+#[UniqueEntity(
+    fields: ['email', 'user'],
+    message: 'Un client avec cette adresse email existe déjà pour ce compte.',
+    errorPath: 'email'
+)]
 class Customer
 {
     #[ORM\Id]
@@ -17,32 +23,32 @@ class Customer
     private ?int $id = null;
 
     #[ORM\Column(length: 180)]
-    #[Assert\NotBlank(message: 'Email is required.')]
-    #[Assert\Email(message: 'Please provide a valid email address.')]
-    #[Groups(['customer:read'])]
+    #[Assert\NotBlank(message: "L'email est requis.")]
+    #[Assert\Email(message: 'Veuillez fournir une adresse email valide.')]
+    #[Groups(['customer:read', 'customer:write'])]
     private ?string $email = null;
 
     #[ORM\ManyToOne(inversedBy: 'userUsers')]
     #[ORM\JoinColumn(nullable: false)]
-    #[Assert\NotNull(message: "An error occurred when trying to update this Customer data. Please contact an administrator.")]
+    #[Assert\NotNull(message: "Une erreur s'est produite lors de la mise à jour des données du client. Veuillez contacter un administrateur.")]
     private ?User $user = null;
 
     #[ORM\Column(length: 100)]
-    #[Assert\NotBlank(message: 'Firstname is required.')]
+    #[Assert\NotBlank(message: 'Le prénom est requis.')]
     #[Assert\Length(
         max: 100,
-        maxMessage: 'Firstname cannot exceed {{ limit }} characters.'
+        maxMessage: 'Le prénom ne peut pas dépasser {{ limit }} caractères.'
     )]
-    #[Groups(['customer:read'])]
+    #[Groups(['customer:read', 'customer:write'])]
     private ?string $firstname = null;
 
     #[ORM\Column(length: 100)]
-    #[Assert\NotBlank(message: 'Lastname is required.')]
+    #[Assert\NotBlank(message: 'Le nom est requis.')]
     #[Assert\Length(
         max: 100,
-        maxMessage: 'Lastname cannot exceed {{ limit }} characters.'
+        maxMessage: 'Le nom ne peut pas dépasser {{ limit }} caractères.'
     )]
-    #[Groups(['customer:read'])]
+    #[Groups(['customer:read', 'customer:write'])]
     private ?string $lastname = null;
 
     public function getId(): ?int

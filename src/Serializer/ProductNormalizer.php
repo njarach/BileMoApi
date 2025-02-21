@@ -22,7 +22,7 @@ class ProductNormalizer implements NormalizerInterface
     {
         $data = $this->normalizer->normalize($product, $format, array_merge($context, ['groups' => 'product:read']));
 
-        $data['details']['self'] = $this->urlGenerator->generate(
+        $data['details']['get'] = $this->urlGenerator->generate(
             'product',
             ['id' => $product->getId()],
             UrlGeneratorInterface::ABSOLUTE_URL
