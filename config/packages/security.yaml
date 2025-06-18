@@ -6,7 +6,7 @@ security:
     providers:
         customer_user_provider:
             entity:
-                class: App\Entity\CustomerUser
+                class: App\Entity\User
                 property: email
     firewalls:
         dev:
@@ -40,6 +40,7 @@ security:
     # Note: Only the *first* access control that matches will be used
     access_control:
         - { path: ^/api/login, roles: PUBLIC_ACCESS }
+        - { path: ^/api/doc, roles: PUBLIC_ACCESS }
         - { path: ^/api, roles: ROLE_USER }
 
 when@test:

@@ -2,12 +2,12 @@
 
 namespace App\Serializer;
 
-use App\Entity\CustomerUser;
+use App\Entity\Customer;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
-class CustomerUserNormalizer implements NormalizerInterface
+class CustomerNormalizer implements NormalizerInterface
 {
     private NormalizerInterface $normalizer;
     private UrlGeneratorInterface $urlGenerator;
@@ -18,19 +18,24 @@ class CustomerUserNormalizer implements NormalizerInterface
         $this->urlGenerator = $urlGenerator;
     }
 
-    public function normalize($customerUser, $format = null, array $context = []): array
+    public function normalize($customer, $format = null, array $context = []): array
     {
-        $data = $this->normalizer->normalize($customerUser, $format, array_merge($context, ['groups' => 'user:read']));
+        // Vérifier si c'est une liste d'objets Customer
+        if (is_iterable($customer)) {
+            return array_map(fn($customer) => $this->normalize($customer, $format, $context), $customer);
+        }
 
-        $data['details']['self'] = $this->urlGenerator->generate(
-            'user',
-            ['id' => $customerUser->getId()],
+        $data = $this->normalizer->normalize($customer, $format, array_merge($context, ['groups' => 'customer:read']));
+
+        $data['details']['get'] = $this->urlGenerator->generate(
+            'customer',
+            ['id' => $customer->getId()],
             UrlGeneratorInterface::ABSOLUTE_URL
         );
 
         $data['details']['delete'] = $this->urlGenerator->generate(
-            'delete_user',
-            ['id' => $customerUser->getId()],
+            'delete_customer',
+            ['id' => $customer->getId()],
             UrlGeneratorInterface::ABSOLUTE_URL
         );
 
@@ -39,13 +44,13 @@ class CustomerUserNormalizer implements NormalizerInterface
 
     public function supportsNormalization($data, ?string $format = null, array $context = []): bool
     {
-        return $data instanceof CustomerUser;
+        return $data instanceof Customer;
     }
 
     public function getSupportedTypes(?string $format): array
     {
         return [
-            CustomerUser::class => true
+            Customer::class => true
         ];
     }
 }

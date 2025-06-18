@@ -1,0 +1,408 @@
+nelmio_api_doc:
+    documentation:
+        info:
+            title: BileMo API
+            description: BileMo est une entreprise offrant toute une sélection de téléphones mobiles haut de gamme.
+            version: 1.0.0
+        paths:
+            /api/customers:
+                get:
+                    tags:
+                        - Customers
+                    summary: Permet d'obtenir la liste de vos clients
+                    description: Retourne la liste de vos clients
+                    parameters:
+                        - in: query
+                          name: page
+                          schema:
+                              type: integer
+                              default: 1
+                              minimum: 1
+                          description: Le numéro de la page à récupérer
+                        - in: query
+                          name: limit
+                          schema:
+                              type: integer
+                              default: 10
+                              minimum: 1
+                              maximum: 100
+                          description: Le nombre de clients à retourner par page
+                    responses:
+                        "200":
+                            description: Liste des clients récupérée avec succès
+                            content:
+                                application/json:
+                                    schema:
+                                        type: object
+                                        properties:
+                                            data:
+                                                type: array
+                                                items:
+                                                    $ref: '#/components/schemas/Customer'
+                                            meta:
+                                                type: object
+                                                properties:
+                                                    currentPage:
+                                                        type: integer
+                                                    totalItems:
+                                                        type: integer
+                                                    itemsPerPage:
+                                                        type: integer
+                        "401":
+                            $ref: "#/components/responses/Unauthorized"
+                        "403":
+                            $ref: "#/components/responses/Forbidden"
+
+                post:
+                    tags:
+                        - Customers
+                    summary: Crée un nouveau client
+                    description: Crée un nouveau client pour l'utilisateur authentifié
+                    requestBody:
+                        required: true
+                        content:
+                            application/json:
+                                schema:
+                                    $ref: '#/components/schemas/CustomerInput'
+                    responses:
+                        "201":
+                            description: Client créé avec succès
+                            content:
+                                application/json:
+                                    schema:
+                                        $ref: '#/components/schemas/Customer'
+                        "400":
+                            description: Données invalides
+                            content:
+                                application/json:
+                                    schema:
+                                        $ref: "#/components/schemas/Error"
+                                    example:
+                                        code: "400"
+                                        message: "Veuillez vérifier les données saisies."
+                        "401":
+                            $ref: "#/components/responses/Unauthorized"
+
+            /api/customers/{id}:
+                get:
+                    tags:
+                        - Customers
+                    summary: Permet d'obtenir les détails d'un de vos clients
+                    description: Retourne les détails de l'un de vos clients
+                    parameters:
+                        - in: path
+                          name: id
+                          required: true
+                          schema:
+                              type: integer
+                          description: L'identifiant unique du client à récupérer
+                    responses:
+                        "200":
+                            description: CLient trouvé avec succès
+                            content:
+                                application/json:
+                                    schema:
+                                        $ref: '#/components/schemas/Customer'
+                        "400":
+                            description: Requête erronée. L'ID du client doit être un nombre supérieur à 0
+                            content:
+                                application/json:
+                                    schema:
+                                        $ref: "#/components/schemas/Error"
+                                    example:
+                                        code: "400"
+                                        message: "L'identifiant doit être un nombre entier positif"
+                        "401":
+                            $ref: "#/components/responses/Unauthorized"
+                        "404":
+                            description: Client introuvable
+                            content:
+                                application/json:
+                                    schema:
+                                        $ref: "#/components/schemas/Error"
+                                    example:
+                                        code: "404"
+                                        message: "Client introuvable pour l'id : {id}."
+
+                delete:
+                    tags:
+                        - Customers
+                    summary: Supprime un client
+                    description: Supprime un client existant
+                    parameters:
+                        - in: path
+                          name: id
+                          required: true
+                          schema:
+                              type: integer
+                          description: L'identifiant unique du client à supprimer
+                    responses:
+                        "204":
+                            description: Client supprimé avec succès
+                        "401":
+                            $ref: "#/components/responses/Unauthorized"
+                        "404":
+                            description: Client introuvable
+                            content:
+                                application/json:
+                                    schema:
+                                        $ref: "#/components/schemas/Error"
+                                    example:
+                                        code: "404"
+                                        message: "Client introuvable pour l'id : {id}."
+
+            /api/products:
+                get:
+                    tags:
+                        - Products
+                    summary: Permet d'obtenir la liste des produits
+                    description: Retourne la liste des produits disponibles
+                    parameters:
+                        - in: query
+                          name: page
+                          schema:
+                              type: integer
+                              default: 1
+                              minimum: 1
+                          description: Le numéro de la page à récupérer
+                        - in: query
+                          name: limit
+                          schema:
+                              type: integer
+                              default: 10
+                              minimum: 1
+                              maximum: 100
+                          description: Le nombre de produits à retourner par page
+                    responses:
+                        "200":
+                            description: Liste des produits récupérée avec succès
+                            content:
+                                application/json:
+                                    schema:
+                                        type: object
+                                        properties:
+                                            data:
+                                                type: array
+                                                items:
+                                                    $ref: '#/components/schemas/Product'
+                                            meta:
+                                                type: object
+                                                properties:
+                                                    currentPage:
+                                                        type: integer
+                                                    totalItems:
+                                                        type: integer
+                                                    itemsPerPage:
+                                                        type: integer
+                        "401":
+                            $ref: "#/components/responses/Unauthorized"
+
+            /api/products/{id}:
+                get:
+                    tags:
+                        - Products
+                    summary: Permet d'obtenir les détails d'un produit
+                    description: Retourne les détails d'un produit spécifique
+                    parameters:
+                        - in: path
+                          name: id
+                          required: true
+                          schema:
+                              type: integer
+                          description: L'identifiant unique du produit à récupérer
+                    responses:
+                        "200":
+                            description: Produit trouvé avec succès
+                            content:
+                                application/json:
+                                    schema:
+                                        $ref: '#/components/schemas/Product'
+                        "400":
+                            description: Requête erronée. L'ID du produit doit être un nombre supérieur à 0
+                            content:
+                                application/json:
+                                    schema:
+                                        $ref: "#/components/schemas/Error"
+                                    example:
+                                        code: "400"
+                                        message: "L'identifiant doit être un nombre entier positif."
+                        "401":
+                            $ref: "#/components/responses/Unauthorized"
+                        "404":
+                            description: Produit introuvable
+                            content:
+                                application/json:
+                                    schema:
+                                        $ref: "#/components/schemas/Error"
+                                    example:
+                                        code: "404"
+                                        message: "Produit introuvable pour l'id : {id}."
+
+            /api/login_check:
+                post:
+                    operationId: postCredentialsItem
+                    tags:
+                        - Authentication
+                    summary: Permet d'obtenir le token JWT d'authentification
+                    requestBody:
+                        description: Crée un nouveau token JWT
+                        content:
+                            application/json:
+                                schema:
+                                    $ref: '#/components/schemas/Credentials'
+                    responses:
+                        "200":
+                            description: Token JWT généré avec succès
+                            content:
+                                application/json:
+                                    schema:
+                                        $ref: '#/components/schemas/Token'
+                        "401":
+                            description: Codes d'accès invalides
+                            content:
+                                application/json:
+                                    schema:
+                                        $ref: "#/components/schemas/Error"
+                                    example:
+                                        code: "401"
+                                        message: "Codes d'accès invalides."
+
+        components:
+            responses:
+                NotFound:
+                    description: La ressource spécifiée est introuvable
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/Error"
+                Unauthorized:
+                    description: Accès non autorisé
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/Error"
+                            example:
+                                code: "401"
+                                message: "Token JWT introuvable ou invalide."
+                Forbidden:
+                    description: Accès refusé. Vous ne disposez pas des droits requis pour effectuer cette action
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/Error"
+                            example:
+                                code: "403"
+                                message: "Accès refusé. Vous ne disposez pas des droits requis pour effectuer cette action."
+
+            schemas:
+                Customer:
+                    type: object
+                    properties:
+                        id:
+                            type: integer
+                            readOnly: true
+                        firstname:
+                            type: string
+                        lastname:
+                            type: string
+                        email:
+                            type: string
+                            format: email
+                    required:
+                        - id
+                        - firstname
+                        - lastname
+                        - email
+
+                CustomerInput:
+                    type: object
+                    properties:
+                        firstname:
+                            type: string
+                            description: Le prénom du client
+                            maxLength: 100
+                        lastname:
+                            type: string
+                            description: Le nom de famille du client
+                            maxLength: 100
+                        email:
+                            type: string
+                            format: email
+                            description: L'adresse e-mail du client
+                    required:
+                        - firstname
+                        - lastname
+                        - email
+
+                Product:
+                    type: object
+                    properties:
+                        id:
+                            type: integer
+                            readOnly: true
+                        name:
+                            type: string
+                        description:
+                            type: string
+                        reference:
+                            type: string
+                        brand:
+                            type: string
+                        unit_price_tax_incl:
+                            type: number
+                            format: float
+                        unit_price_tax_excl:
+                            type: number
+                            format: float
+                    required:
+                        - id
+                        - name
+                        - reference
+                        - unit_price_tax_incl
+                        - unit_price_tax_excl
+
+                Error:
+                    type: object
+                    properties:
+                        code:
+                            type: string
+                        message:
+                            type: string
+                    required:
+                        - code
+                        - message
+
+                Token:
+                    type: object
+                    properties:
+                        token:
+                            type: string
+                            readOnly: true
+                    required:
+                        - token
+
+                Credentials:
+                    type: object
+                    properties:
+                        email:
+                            type: string
+                            default: techsolutions@techmail.com
+                        password:
+                            type: string
+                            default: password123
+                    required:
+                        - email
+                        - password
+
+            securitySchemes:
+                bearerAuth:
+                    type: apiKey
+                    in: header
+                    name: Authorization
+        security:
+            - bearerAuth: [ ]
+
+    areas:
+        disable_default_routes: true
+        path_patterns:
+            - ^/api(?!/doc$)

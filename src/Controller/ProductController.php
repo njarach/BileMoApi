@@ -28,7 +28,7 @@ final class ProductController extends AbstractController
     {
         $currentUser = $this->getUser();
         if (!$currentUser) {
-            throw new HttpException(Response::HTTP_UNAUTHORIZED, 'Authentication is required.');
+            throw new HttpException(Response::HTTP_UNAUTHORIZED, 'Authentification requise.');
         }
 
         $page = $request->query->get('page', 1);
@@ -51,11 +51,15 @@ final class ProductController extends AbstractController
      * @throws InvalidArgumentException
      */
     #[Route('/{id}', name: 'product', methods: ['GET'])]
-    public function getProduct(Product $product, SerializerInterface $serializer, TagAwareCacheInterface $cache): JsonResponse
+    public function getProduct(?Product $product, SerializerInterface $serializer, TagAwareCacheInterface $cache, int $id): JsonResponse
     {
+        if (!$product) {
+            throw new HttpException(Response::HTTP_NOT_FOUND, "Produit introuvable pour l'id : $id");
+        }
+
         $currentUser = $this->getUser();
         if (!$currentUser) {
-            throw new HttpException(Response::HTTP_UNAUTHORIZED, 'Authentication is required.');
+            throw new HttpException(Response::HTTP_UNAUTHORIZED, 'Authentification requise.');
         }
 
         $idCache = "getProduct-" . $product->getId();

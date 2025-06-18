@@ -22,7 +22,7 @@ services:
     App\Serializer\ProductNormalizer:
         tags:
             - { name: 'serializer.normalizer' }
-    App\Serializer\CustomerUserNormalizer:
+    App\Serializer\CustomerNormalizer:
         tags:
             - { name: 'serializer.normalizer' }
 
