@@ -1,29 +1,29 @@
-# BileMo - Sélection de téléphones mobiles haut de gamme
+# BileMoApi - catalogue en ligne de téléphones haut de gamme
 
-## Presentation du projet
-API REST BileMO réalisé avec Symfony 7.
+## Présentation du projet
+API REST BileMO réalisée avec Symfony 7.
 
-Réalisé dans le cadre de la formation _développeur d'application PHP/symfony_ d'OpenClassrooms.
+Projet réalisé dans le cadre de la formation _développeur d'application PHP/symfony_ d'OpenClassrooms.
 
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/f87db5500bb54e7d938d6a0f773c66e2)](https://app.codacy.com/gh/njarach/BileMoApi/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
 
 ## Description
 **BileMo** est une entreprise offrant toute une sélection de téléphones mobiles haut de gamme en B2B.
-Une API REST fournie à toutes les plateformes qui le souhaitent l’accès au catalogue.
+Une API REST fournit à toutes les plateformes qui le souhaitent l’accès au catalogue.
 
 Les clients de l’API sont authentifiés via JWT.
 
 
-## Prè-requis
+## Pré-requis
 
 PHP
-PHP 8.1 ou supérieur
+**PHP 8.1** ou supérieur
 
 MySQL
 **MySQL 8.0** ou supérieur.
 
 Composer
-Composer 2.0 ou supérieur.
+**Composer 2.0** ou supérieur.
 
 ## Installation
 
@@ -58,7 +58,7 @@ JWT_PASSPHRASE=yourPassphrase
 ```
 Plus d'infos : [Documentation officielle JWT](https://github.com/lexik/LexikJWTAuthenticationBundle/blob/2.x/Resources/doc/index.rst#getting-started)
 
- Créez la base de données et les tables:
+ Créer la base de données et les tables:
 
 ```symfony console doctrine:database:create```
 
