@@ -23,7 +23,7 @@ MySQL
 **MySQL 8.0** ou supérieur.
 
 Composer
-[**Composer 2.4**](https://getcomposer.org/download/) ou supèrieur.
+Composer 2.0 ou supérieur.
 
 ## Installation
 
