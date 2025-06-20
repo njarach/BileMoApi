@@ -1,7 +1,7 @@
 # BileMo - Sélection de téléphones mobiles haut de gamme
 
 ## Presentation du projet
-API REST BileMO réalisé avec [**Symfony 6**](https://symfony.com/).
+API REST BileMO réalisé avec Symfony 7.
 
 Réalisé dans le cadre de la formation _développeur d'application PHP/symfony_ d'OpenClassrooms.
 
@@ -17,10 +17,10 @@ Les clients de l’API sont authentifiés via JWT.
 ## Prè-requis
 
 PHP
-[**PHP 8.1**](https://www.php.net/downloads) ou supèrieur
+PHP 8.1 ou supérieur
 
 MySQL
-**MySQL 8.0** ou supèrieur.
+**MySQL 8.0** ou supérieur.
 
 Composer
 [**Composer 2.4**](https://getcomposer.org/download/) ou supèrieur.
@@ -29,7 +29,7 @@ Composer
 
 Cloner le projet
 
-```https://github.com/kseb49/BileMo.git```
+```git clone https://github.com/njarach/BileMoApi.git```
 
 Installer les dépendances
 
@@ -37,7 +37,7 @@ Installer les dépendances
 
 _Variables d'environnements_ : Configurer un fichier _.env.local_:
  ```Dotenv
-DATABASE_URL="mysql://app:!ChangeMe!@127.0.0.1:3306/app?serverVersion=8.0.32&charset=utf8mb4"
+DATABASE_URL="mysql://app:!ChangeMe!@127.0.0.1:3306/bilemoapi?serverVersion=10.4.32-MariaDB&charset=utf8mb4"
 ```
 Pour une mise en production :
 
@@ -62,7 +62,7 @@ Plus d'infos : [Documentation officielle JWT](https://github.com/lexik/LexikJWTA
 
 ```symfony console doctrine:database:create```
 
-```symfony console doctrine:migrations:migrate```
+```symfony console doctrine:migrations:migrate``` ou ```symfony console doctrine:schema:update --force```
 
 Charger les données initiales
 
