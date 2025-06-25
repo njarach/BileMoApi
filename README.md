@@ -75,3 +75,7 @@ Lancer le serveur symfony
 S'authentifier en tant qu'utilisateur avec les fixtures (exemple TechSolution)
 
 `email: techsolutions@techmail.com, password:password123`
+
+Une fois le token obtenu, pour s'authentifier
+
+`Authorization: bearer votre_token_ici`
