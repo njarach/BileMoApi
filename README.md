@@ -71,3 +71,7 @@ Charger les données initiales
 Lancer le serveur symfony
 
 `symfony server:start`
+
+S'authentifier en tant qu'utilisateur avec les fixtures (exemple TechSolution)
+
+`email: techsolutions@techmail.com, password:password123`

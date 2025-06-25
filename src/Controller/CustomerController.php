@@ -78,7 +78,7 @@ final class CustomerController extends AbstractController
 
 
     #[Route('', name: 'create_customer', methods: ['POST'])]
-    public function createCustomer(Request $request, EntityManagerInterface $em, SerializerInterface $serializer, ValidatorInterface $validator): JsonResponse
+    public function createCustomer(Request $request, EntityManagerInterface $em, SerializerInterface $serializer, ValidatorInterface $validator, TagAwareCacheInterface $cache): JsonResponse
     {
         $currentUser = $this->getUser();
         if (!$currentUser) {
@@ -105,6 +105,8 @@ final class CustomerController extends AbstractController
 
         $em->persist($customer);
         $em->flush();
+
+        $cache->invalidateTags(['customersCache']);
 
         $jsonCustomer = $serializer->serialize($customer, 'json', ['groups' => 'customer:read']);
         $returnLocation = $this->generateUrl('customer', ['id' => $customer->getId()]);
