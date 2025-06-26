@@ -34,7 +34,7 @@ final class ProductController extends AbstractController
         $page = $request->query->get('page', 1);
         $limit = $request->query->get('limit', 5);
 
-        $idCache = "getProducts-" . $page . "-" . $limit;
+        $idCache = "getProducts-" . $currentUser->getId() . $page . "-" . $limit;
 
         $jsonProductsList = $cache->get($idCache, function (ItemInterface $item) use ($productRepository, $page, $limit, $serializer) {
             $item->tag('productsCache');
@@ -62,7 +62,7 @@ final class ProductController extends AbstractController
             throw new HttpException(Response::HTTP_UNAUTHORIZED, 'Authentification requise.');
         }
 
-        $idCache = "getProduct-" . $product->getId();
+        $idCache = "getProduct-" . $currentUser->getId() . $product->getId();
 
         $jsonProduct = $cache->get($idCache, function (ItemInterface $item) use ($serializer, $product) {
             $item->tag('productsCache');

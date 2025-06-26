@@ -38,7 +38,7 @@ final class CustomerController extends AbstractController
             throw new HttpException(Response::HTTP_UNAUTHORIZED, 'Authentification requise.');
         }
 
-        $idCache = "getCustomers-" . $page . "-" . $limit;
+        $idCache = "getCustomers-" . $currentUser->getId() . $page . "-" . $limit;
 
         $jsonUsers = $cache->get($idCache, function (ItemInterface $item) use ($customerRepository, $page, $limit, $serializer, $currentUser) {
             $item->tag('customersCache');
@@ -65,7 +65,7 @@ final class CustomerController extends AbstractController
             throw new HttpException(Response::HTTP_FORBIDDEN, 'Accès refusé. Vous ne disposez pas des droits requis pour effectuer cette action.');
         }
 
-        $idCache = "getCustomer-" . $customer->getId();
+        $idCache = "getCustomer-" . $currentUser->getId() . $customer->getId();
 
         $jsonUser = $cache->get($idCache, function (ItemInterface $item) use ($serializer, $customer) {
             $item->tag('customersCache');
@@ -129,9 +129,10 @@ final class CustomerController extends AbstractController
             throw new HttpException(Response::HTTP_FORBIDDEN, 'Accès refusé. Vous ne disposez pas des droits requis pour effectuer cette action.');
         }
 
-        $cache->invalidateTags(['customersCache']);
         $em->remove($customer);
         $em->flush();
+
+        $cache->invalidateTags(['customersCache']);
 
         return new JsonResponse('Client supprimé avec succès.', 200);
     }
