@@ -12,3 +12,9 @@
 ###> lexik/jwt-authentication-bundle ###
 /config/jwt/*.pem
 ###< lexik/jwt-authentication-bundle ###
+
+### IDE settings files
+.idea/dataSources.xml
+.idea/symfony2.xml
+.idea/commandlinetools/Symfony_11_08_2025_12_14.xml
+.idea/commandlinetools/schemas/frameworkDescriptionVersion1.1.4.xsd
